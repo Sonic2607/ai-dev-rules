@@ -12,6 +12,9 @@ cursor/
   rules/                 # Cursor project rules
   skills/                # Cursor Agent Skills
   project-types/         # списки правил по типам проектов
+scripts/
+  bootstrap.sh           # установка правил в проект
+  update.sh              # обновление правил в проекте
 templates/
   AGENTS-go.md
   AGENTS-web.md
@@ -23,17 +26,12 @@ README.md
 
 ## Быстрое подключение
 
-Скопировать весь Cursor-набор в проект:
+Находясь в корне любого проекта, выполнить:
 
 ```bash
-cp -r ~/ansible_config/ai-dev-rules/cursor ./.cursor
-```
-
-Или синхронизировать содержимое:
-
-```bash
-mkdir -p .cursor
-rsync -av ~/ansible_config/ai-dev-rules/cursor/ .cursor/
+curl -fsSL \
+  https://raw.githubusercontent.com/sonicson26/ai-dev-rules/main/scripts/bootstrap.sh \
+  | bash
 ```
 
 После этого в проекте появятся:
@@ -42,6 +40,20 @@ rsync -av ~/ansible_config/ai-dev-rules/cursor/ .cursor/
 - `.cursor/rules/*.mdc`
 - `.cursor/skills/*/SKILL.md`
 - `.cursor/project-types/*.txt`
+
+## Обновление
+
+Чтобы обновить правила в уже подключенном проекте:
+
+```bash
+curl -fsSL \
+  https://raw.githubusercontent.com/sonicson26/ai-dev-rules/main/scripts/update.sh \
+  | bash
+```
+
+`update.sh` синхронизирует содержимое `cursor/` из репозитория в `.cursor/` текущего проекта.
+
+> Важно: `bootstrap.sh` полностью пересоздает `.cursor/`, а `update.sh` удаляет из `.cursor/` файлы, которых больше нет в репозитории.
 
 ## Project Types
 
