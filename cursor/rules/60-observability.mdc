@@ -1,0 +1,80 @@
+---
+description: Правила для логирования, метрик и observability
+globs: "**/*.{go,ts,tsx,js,jsx,yml,yaml,hcl}"
+alwaysApply: false
+---
+
+# Observability
+
+## Цель
+
+- Логи, метрики и health-checks должны помогать понять, что произошло, где искать проблему и как быстро восстановить сервис.
+- Observability добавляется не ради шума, а ради поддержки и диагностики.
+
+## Логи
+
+- Для backend-сервисов предпочитай structured JSON logs в stdout.
+- Логи должны содержать контекст:
+  - service
+  - component
+  - operation
+  - request_id или trace_id, если доступны
+  - error
+- Не логируй:
+  - секреты
+  - PII
+  - access tokens
+  - private keys
+  - passwords
+  - полные payload без необходимости
+- Ошибки логируй на границе операции, где есть контекст.
+- Не логируй одну и ту же ошибку много раз на каждом уровне.
+
+## Метрики
+
+- Метрики должны быть стабильными.
+- Не используй high-cardinality labels:
+  - user_id
+  - email
+  - raw URL
+  - token
+  - payload
+  - уникальные IDs без необходимости
+- Для сервисов добавляй метрики:
+  - process health
+  - uptime
+  - request count
+  - request duration
+  - error count
+  - external connection status
+  - reconnect count
+  - queue size
+  - last message age
+- Для WebSocket/streaming сервисов особенно важны:
+  - active connections
+  - messages read
+  - messages written
+  - parse errors
+  - dropped messages
+  - reconnects
+  - stale data age
+
+## Health checks
+
+- `/healthz` проверяет живость процесса.
+- `/readyz` проверяет готовность принимать рабочую нагрузку.
+- Не делай `/healthz` тяжёлым.
+- В `/readyz` можно учитывать БД, Redis и критичные внешние зависимости.
+- Health-check не должен раскрывать секреты и внутренние детали.
+
+## Alerts и dashboards
+
+- Alerts должны описывать пользовательский или операционный риск, а не просто шумную метрику.
+- Dashboard должен отвечать на вопросы:
+  - сервис жив?
+  - данные свежие?
+  - есть ли ошибки?
+  - есть ли задержка?
+  - есть ли перегруз?
+  - где узкое место?
+- Queries для dashboard и logs должны быть воспроизводимыми и понятными дежурному инженеру.

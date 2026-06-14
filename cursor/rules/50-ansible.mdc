@@ -1,0 +1,66 @@
+---
+description: Правила для Ansible playbooks, roles и inventory
+globs: "**/*.{yml,yaml,j2,ini}"
+alwaysApply: false
+---
+
+# Ansible
+
+## Главный принцип
+
+- Любая постоянная настройка сервера должна быть автоматизирована через Ansible.
+- Ручные действия допустимы только для диагностики.
+- Если ручное действие нужно повторять, преврати его в Ansible task, role или template.
+- Инфраструктурные изменения должны быть идемпотентными.
+
+## Структура
+
+- Новую сервисную логику оформляй ролью, а не большим inline-блоком в playbook.
+- Используй понятную структуру:
+  - `roles/<role>/tasks/main.yml`
+  - `roles/<role>/handlers/main.yml`
+  - `roles/<role>/templates/`
+  - `roles/<role>/defaults/main.yml`
+  - `roles/<role>/vars/main.yml`, если нужно
+- Не дублируй одинаковые tasks между playbook.
+- Выноси повторяемую логику в роли.
+
+## Модули
+
+- Предпочитай `ansible.builtin.*` модули вместо `shell` и `command`.
+- Используй `shell` или `command` только когда нет нормального модуля.
+- Если нужен `shell` или `command`, добавляй:
+  - `creates`
+  - `removes`
+  - `changed_when`
+  - `failed_when`
+  - `until`
+  - `retries`
+  - `delay`
+  где это уместно.
+- Не используй shell pipe без необходимости.
+
+## Templates и config
+
+- Конфиги создавай через templates.
+- Для systemd-сервисов используй handlers для restart/reload.
+- Не перезапускай сервис, если конфиг не изменился.
+- Проверяй конфиги перед reload/restart, если у сервиса есть validator.
+- Указывай `owner`, `group` и `mode` для управляемых файлов.
+- Не добавляй machine-specific абсолютные пути в роли и шаблоны.
+
+## Secrets
+
+- Не храни секреты в inventory, playbooks, templates и комментариях.
+- Для секретов используй Ansible Vault или существующий секретный механизм проекта.
+- Не выводи секреты в debug.
+- Для задач с секретами используй `no_log: true`, если есть риск утечки.
+
+## Проверки
+
+После изменений предлагай:
+
+- `ansible-lint`
+- `ansible-playbook --check`
+- `ansible-playbook --diff`
+- запуск конкретного playbook на test/dev окружении

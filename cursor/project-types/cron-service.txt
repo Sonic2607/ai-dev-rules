@@ -1,0 +1,11 @@
+Подключить:
+
+00-global.mdc
+10-go-backend.mdc
+20-postgres.mdc
+30-redis.mdc
+50-ansible.mdc
+60-observability.mdc
+70-refactoring.mdc
+80-documentation.mdc
+90-code-review.mdc

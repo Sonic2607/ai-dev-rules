@@ -1,0 +1,67 @@
+---
+description: Правила для Go WebSocket-сервисов
+globs: "**/*.go"
+alwaysApply: false
+---
+
+# Go WebSocket
+
+## Соединения
+
+- Все WebSocket-соединения должны закрываться при отмене `context.Context` или shutdown приложения.
+- Всегда обрабатывай:
+  - connect
+  - disconnect
+  - reconnect
+  - read errors
+  - write errors
+  - ping/pong
+  - timeout
+- Для внешних подключений используй retry с backoff.
+- Не делай бесконечный reconnect без паузы.
+- Логируй connect, disconnect, reconnect и ошибки без секретов и полных payload.
+- Настраивай `read/write deadlines`, `ping/pong` и лимиты размера сообщений.
+- Не запускай бесконтрольные goroutine на каждое сообщение без backpressure.
+
+## Конкурентность
+
+- Разделяй:
+  - транспорт
+  - обработку сообщений
+  - бизнес-логику
+- Для shared state осознанно используй:
+  - mutex
+  - channels
+  - single-owner event loop
+- Проверяй race conditions.
+- Не пиши в один WebSocket connection из нескольких goroutine без синхронизации.
+- Добавляй bounded queues/channels, если поток сообщений может расти.
+- Определи поведение при переполнении очереди:
+  - drop
+  - backpressure
+  - disconnect slow consumer
+  - retry
+
+## Надёжность
+
+- Для входящих сообщений валидируй формат и тип события.
+- Не доверяй внешнему payload.
+- Ошибки парсинга не должны валить весь сервис.
+- Для важных потоков добавляй метрики:
+  - connection status
+  - reconnect count
+  - messages read
+  - messages written
+  - parse errors
+  - dropped messages
+  - last message age
+- Если сообщение влияет на состояние системы, обработка должна быть идемпотентной или защищённой от дублей.
+
+## Shutdown
+
+- При shutdown:
+  - перестань принимать новые сообщения
+  - закрой входящие соединения
+  - дождись обработки текущих сообщений, если это безопасно
+  - закрой ресурсы
+- Не оставляй goroutine leak.
