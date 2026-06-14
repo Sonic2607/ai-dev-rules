@@ -30,7 +30,7 @@ README.md
 
 ```bash
 curl -fsSL \
-  https://raw.githubusercontent.com/sonicson26/ai-dev-rules/main/scripts/bootstrap.sh \
+  https://raw.githubusercontent.com/Sonic2607/ai-dev-rules/main/scripts/bootstrap.sh \
   | bash
 ```
 
@@ -47,7 +47,7 @@ curl -fsSL \
 
 ```bash
 curl -fsSL \
-  https://raw.githubusercontent.com/sonicson26/ai-dev-rules/main/scripts/update.sh \
+  https://raw.githubusercontent.com/Sonic2607/ai-dev-rules/main/scripts/update.sh \
   | bash
 ```
 

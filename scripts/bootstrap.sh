@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-REPO_URL="https://github.com/sonicson26/ai-dev-rules.git"
+REPO_URL="https://github.com/Sonic2607/ai-dev-rules.git"
 
 TMP_DIR=$(mktemp -d)
 
